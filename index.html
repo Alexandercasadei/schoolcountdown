@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // Funzione per aggiornare il numero dei giorni rimanenti al caricamento della pagina
+        window.onload = function() {
+            const daysLeft = parseInt(localStorage.getItem('daysLeft')) || 23;
+            document.getElementById('days').textContent = daysLeft;
+        };
+    </script>
+    
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conto alla rovescia</title>
+<style>
+    
+    body {
+        background-color: #7FFFD4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    #counter {
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+    #giorniRimanenti {
+        font-size: 30px;
+        font-weight: bold;
+    }
+    .container {
+        display: grid;
+        grid-template-columns: repeat(6, 80px);
+        gap: 10px;
+    }
+    .cell {
+        width: 80px;
+        height: 80px;
+        background-color: rgb(51, 241, 255);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .cell.clicked {
+        background-color: lightcoral;
+    }
+    .cell.disabled {
+        pointer-events: none;
+        background-color: #ccc;
+    }
+    #endMessage {
+        font-size: 168px;
+        font-weight: bold;
+        color: rgb(255, 0, 0);
+        display: none; /* Inizialmente nascosto */
+    }
+</style>
+</head>
+<body>
+
+<div id="counter">
+    <span id="giorniRimanenti">GIORNI RIMANENTI ALLA FINE DELLA SCUOLA:</span> <span id="days">23</span>
+</div>
+
+<div class="container" id="grid"></div>
+
+<div id="endMessage">È FINITA LA SCUOLA</div>
+
+<script>
+    const grid = document.getElementById("grid");
+    const daysDisplay = document.getElementById("days");
+    const giorniRimanenti = document.getElementById("giorniRimanenti");
+    const endMessage = document.getElementById("endMessage");
+    let daysLeft = parseInt(localStorage.getItem('daysLeft')) || 23;
+    let currentCell = daysLeft;
+
+    for (let i = daysLeft; i > 0; i--) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.textContent = i;
+        cell.dataset.index = i;
+        cell.addEventListener("click", function() {
+            const clickedIndex = parseInt(cell.dataset.index);
+            if (clickedIndex === currentCell) {
+                cell.classList.add("clicked");
+                daysLeft -= 1;
+                daysDisplay.textContent = daysLeft;
+                currentCell--;
+                enableNextCell();
+                if (daysLeft === 0) {
+                    showEndMessage();
+                }
+                localStorage.setItem('daysLeft', daysLeft);
+            }
+        });
+        grid.appendChild(cell);
+    }
+
+    function enableNextCell() {
+        const nextCell = document.querySelector(`.cell[data-index="${currentCell}"]`);
+        if (nextCell) {
+            nextCell.classList.remove('disabled');
+        }
+    }
+
+    function showEndMessage() {
+        grid.style.display = 'none';
+        endMessage.style.display = 'block';
+        giorniRimanenti.style.display = 'none';
+        days.style.display = 'none';
+        localStorage.removeItem('daysLeft');
+    }
+
+function resetCountdown() {
+    localStorage.removeItem("daysLeft");
+    localStorage.removeItem("currentCell");
+    // Ricarica la pagina o esegui altre azioni necessarie per reimpostare il conteggio
+    window.location.reload(); // Ricarica la pagina
+}
+</script>
+
+</body>
+</html>
